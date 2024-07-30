@@ -1,0 +1,65 @@
+name: Build
+on:
+  workflow_dispatch:
+  pull_request:
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+      - name: Restore project
+        run: |
+          msbuild AtsEx.sln /t:Restore /p:Configuration=Release
+          nuget restore AtsEx.sln
+      - name: Restore dependencies
+        id: cache-dependencies
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            AtsEx.PluginHost\LocalReferences\BveTs\Mackoy.IInputDevice.DLL
+            AtsEx.PluginHost\LocalReferences\BveTs\Mackoy.XmlInterfaces.DLL
+          key: dependencies-1.0.0.0
+      - name: Setup dependencies
+        if: steps.cache-dependencies.outputs.cache-hit != 'true'
+        env:
+          BVETS6: ${{ secrets.BveTs6 }}
+        run: |
+          curl -L "$env:BVETS6" -o bvets6-msi.zip
+          7z x -obvets6 bvets6-msi.zip
+          cmd.exe /c start /wait msiexec /a bvets6\BveTs6Setup.msi /qn
+          mkdir AtsEx.PluginHost\LocalReferences\BveTs
+          copy "C:\Program Files\mackoy\BveTs6\Mackoy.IInputDevice.DLL" AtsEx.PluginHost\LocalReferences\BveTs\Mackoy.IInputDevice.DLL
+          copy "C:\Program Files\mackoy\BveTs6\Mackoy.XmlInterfaces.DLL" AtsEx.PluginHost\LocalReferences\BveTs\Mackoy.XmlInterfaces.DLL
+      - name: Cache dependencies
+        if: steps.cache-dependencies.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            AtsEx.PluginHost\LocalReferences\BveTs\Mackoy.IInputDevice.DLL
+            AtsEx.PluginHost\LocalReferences\BveTs\Mackoy.XmlInterfaces.DLL
+          key: dependencies-1.0.0.0
+      - name: Setup DllExport
+        run: |
+          curl -OL https://github.com/3F/DllExport/releases/download/v1.7.4/DllExport.bat
+          .\DllExport.bat -action Restore
+      - name: Build
+        run: msbuild AtsEx.sln /p:Configuration=Release
+      - name: Package
+        run: |
+          .\package.bat
+          Add-Content -Path $env:GITHUB_ENV -Value "GIT_HASH=$(git rev-parse --short HEAD)"
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: AtsEx-AsInputDevice-release-${{ env.GIT_HASH }}
+          path: ./bin/*
