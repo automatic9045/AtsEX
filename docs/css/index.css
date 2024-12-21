@@ -1,0 +1,141 @@
+﻿div.eyecatch {
+    position: relative;
+    height: 480px;
+    background-image: url('../eyecatch.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+    div.eyecatch::after {
+        content: '';
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: #00000020;
+    }
+
+    div.eyecatch > * {
+        position: absolute;
+        filter: drop-shadow(0 0 5px black);
+        z-index: 1;
+    }
+
+    div.eyecatch > img {
+        bottom: 24px;
+        left: 48px;
+        width: 30%;
+        min-width: 280px;
+    }
+
+    div.eyecatch > span {
+        top: 24px;
+        right: 64px;
+        line-height: 1.1;
+        text-align: left;
+        font-weight: 700;
+        font-size: 4vw;
+        color: white;
+    }
+
+        div.eyecatch > span > strong {
+            font-size: 1.5em;
+        }
+
+        div.eyecatch > span > .red {
+            color: red;
+        }
+
+        div.eyecatch > span > span.wbr {
+            display: none;
+        }
+
+        div.eyecatch > span > span.except-wbr {
+            display: inline;
+        }
+
+    div.eyecatch > div {
+        bottom: 32px;
+        right: 64px;
+    }
+
+        div.eyecatch > div > a.button {
+            min-width: 480px;
+            font-weight: 700;
+            border: 1px solid var(--background-dark-color);
+            border-radius: 6px;
+        }
+
+            div.eyecatch > div > a.button:hover {
+                filter: none;
+            }
+
+            div.eyecatch > div > a.button > span {
+                font-size: 1.75em;
+            }
+
+                div.eyecatch > div > a.button > span > span.green-text {
+                    color: var(--main-darker-color);
+                }
+
+            div.eyecatch > div > a.button > small {
+                font-weight: 400;
+                color: var(--background-dark-color);
+            }
+
+                div.eyecatch > div > a.button > small > span.release-version-eyecatch > strong {
+                    font-weight: 400;
+                }
+
+a.fanbox > img {
+    max-width: 240px;
+    margin: 8px 0;
+}
+
+@media screen and (max-width: 1279px) {
+    div.eyecatch > img {
+        bottom: 12px;
+        left: 24px;
+    }
+
+    div.eyecatch > span {
+        top: 12px;
+        right: 24px;
+    }
+}
+
+@media screen and (max-width: 959px) {
+    div.eyecatch > span {
+        font-size: 2.5em;
+    }
+}
+
+@media screen and (max-width: 899px) {
+    div.eyecatch > div {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 719px) {
+    div.eyecatch > img {
+        filter: drop-shadow(0 0 3px black);
+    }
+
+    div.eyecatch > span {
+        filter: drop-shadow(0 0 3px black);
+    }
+}
+
+@media screen and (max-width: 599px) {
+    div.eyecatch > span > strong {
+        line-height: 1.2;
+    }
+
+    div.eyecatch > span > span.wbr {
+        display: inline;
+    }
+
+    div.eyecatch > span > span.except-wbr {
+        display: none;
+    }
+}
